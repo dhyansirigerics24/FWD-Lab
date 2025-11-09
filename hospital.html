@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeevrakshak Dashboard</title>
+    <link rel="stylesheet" href="hospital.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<header class="navbar">
+        <div class="logo">
+            <h1><i class="fas fa-heartbeat"></i> Jeevrakshak</h1>
+        </div>
+        <nav class="nav-links">
+            <ul>
+                <li><a href="#" id="staffing-link">Staffing</a></li>
+                <li><a href="#">Provider Dashboard</a></li>
+                <li><a href="#" id="patient-details-link">Patient Details</a></li>
+                <li><a href="#"><i class="fas fa-user-circle"></i></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard" id="main-dashboard-view">
+        <div class="left-column">
+            
+            <section class="card critical-alerts" id="critical-alerts-card">
+                <h2>Critical Alerts</h2>
+                <div class="alert-content" id="default-alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p><strong>Patient #1234</strong> needs immediate attention in Ward B.</p>
+                </div>
+            </section>
+
+            <section class="card patient-summary-card">
+                <h2>Patient Summary</h2>
+                <div class="patient-summary">
+                    <div class="summary-card total-patients">
+                        <h3>Total Patients</h3>
+                        <p id="report-total-patients">45</p>
+                    </div>
+                    <div class="summary-card critical-patients">
+                        <h3>Critical Patients</h3>
+                        <p id="report-critical-patients">5</p>
+                    </div>
+                    <div class="summary-card stable-patients">
+                        <h3>Stable Status</h3>
+                        <p id="report-stable-patients">40</p>
+                    </div>
+                </div>
+
+                <div id="patient-details-container">
+                    <div class="patient-detail-card">
+                        <p>Patient <strong>Karan S.</strong> - Ward A</p>
+                        <p class="status-critical"><i class="fas fa-exclamation-triangle"></i> Critical</p>
+                    </div>
+                    <div class="patient-detail-card">
+                        <p>Patient <strong>Ria V.</strong> - Ward B</p>
+                        <p class="status-stable"><i class="fas fa-check-circle"></i> Stable</p>
+                    </div>
+                </div>
+
+                <p id="patient-data-status" style="text-align: center; margin-top: 20px; font-style: italic; display: none;">No patients are currently logged in.</p>
+            </section>
+
+            <section class="card quick-actions">
+                <h2>Quick Actions</h2>
+                <ul>
+                    <li><button class="action-btn new-patient" id="admit-patient-btn">Admit New Patient</button></li>
+                    <li><button class="action-btn view-reports" id="view-reports-btn">View All Reports</button></li>
+                </ul>
+            </section>
+            
+            <section class="card oxygen-request">
+                <h2>Oxygen Request</h2>
+                <label for="cylinder-quantity">Quantity:</label>
+                <input type="number" id="cylinder-quantity" value="5" min="1">
+                <button class="request-btn" onclick="requestCylinders()" id="request-cylinders-btn">Request Cylinders</button>
+            </section>
+        </div>
+        
+        <div class="right-column">
+            
+            <section class="card schedule-card">
+                <h2>Today's Schedule</h2>
+                <ul id="today-schedule-list">
+                    <li class="schedule-item doctor-schedule">
+                        <i class="fas fa-user-md"></i>
+                        <div class="schedule-info">
+                            <h4>Dr. Haqqif Ahmed</h4>
+                            <p>Morning Rounds - Ward C</p>
+                            <small>09:00 AM - 11:00 AM</small>
+                        </div>
+                    </li>
+                    <li class="schedule-item nurse-schedule">
+                        <i class="fas fa-user-nurse"></i>
+                        <div class="schedule-info">
+                            <h4>Nurse Latha</h4>
+                            <p>Medication Delivery - Ward A</p>
+                            <small>11:00 AM - 12:30 PM</small>
+                        </div>
+                    </li>
+                    <li class="schedule-item admin-schedule">
+                        <i class="fas fa-briefcase"></i>
+                        <div class="schedule-info">
+                            <h4>Admin Staff</h4>
+                            <p>Supply Audit Meeting</p>
+                            <small>02:00 PM - 03:00 PM</small>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="card waiting-queue-card">
+                <h2>Waiting Queue</h2>
+                <ul id="waiting-queue-list">
+                    <li class="queue-item high-priority">
+                        <span class="queue-number">#1</span>
+                        <div class="queue-info">
+                            <h4>Ramesh K.</h4>
+                            <small>Emergency - Trauma</small>
+                        </div>
+                        <i class="fas fa-clock"></i>
+                    </li>
+                    <li class="queue-item medium-priority">
+                        <span class="queue-number">#2</span>
+                        <div class="queue-info">
+                            <h4>Meena P.</h4>
+                            <small>General Check-up</small>
+                        </div>
+                        <i class="fas fa-clock"></i>
+                    </li>
+                    <li class="queue-item low-priority">
+                        <span class="queue-number">#3</span>
+                        <div class="queue-info">
+                            <h4>Sarah B.</h4>
+                            <small>Lab Results Follow-up</small>
+                        </div>
+                        <i class="fas fa-clock"></i>
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+    
+    <section class="staffing-report-view" id="staffing-report-view" style="display: none;">
+        <div class="staffing-header">
+            <h1>Staffing Report <span id="report-date"></span></h1>
+            <button id="back-to-dashboard-btn" class="back-btn">← Back to Dashboard</button>
+        </div>
+        
+        <div class="staffing-summary">
+            <div class="summary-card doctors">
+                <h3>Doctors</h3>
+                <p id="report-doctors-count">--</p>
+            </div>
+            <div class="summary-card nurses">
+                <h3>Nurses</h3>
+                <p id="report-nurses-count">--</p>
+            </div>
+            <div class="summary-card admins">
+                <h3>Admins</h3>
+                <p id="report-admins-count">--</p>
+            </div>
+        </div>
+
+        <table class="staffing-list-table">
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Specialization</th>
+                </tr>
+            </thead>
+            <tbody id="staffing-table-body">
+                </tbody>
+        </table>
+    </section>
+
+    <section class="patient-details-view" id="patient-details-view" style="display: none;">
+        <div class="patient-details-header">
+            <h1>All Patient Details</h1>
+            <button id="back-to-dashboard-from-patient-btn" class="back-btn">← Back to Dashboard</button>
+        </div>
+        
+        <table class="staffing-list-table">
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Ward/Bed</th>
+                    <th>Condition</th>
+                    <th>Last Update</th>
+                </tr>
+            </thead>
+            <tbody id="patient-details-table-body">
+                </tbody>
+        </table>
+    </section>
+
+    <section class="patient-admission-view" id="patient-admission-view" style="display: none;">
+        <div class="patient-admission-header">
+            <h1>Admit New Patient</h1>
+            <button id="back-to-dashboard-from-admission-btn" class="back-btn">← Back to Dashboard</button>
+        </div>
+        
+        <form class="admission-form" id="patient-admission-form">
+            <div class="input-group">
+                <label for="new-patient-id">Patient ID:</label>
+                <input type="text" id="new-patient-id" required placeholder="e.g., P9801">
+            </div>
+            <div class="input-group">
+                <label for="new-patient-name">Name:</label>
+                <input type="text" id="new-patient-name" required placeholder="e.g., Anjali Sharma">
+            </div>
+            <div class="input-group">
+                <label for="new-patient-ward">Ward/Bed:</label>
+                <input type="text" id="new-patient-ward" required placeholder="e.g., Ward A, Bed 12">
+            </div>
+            <div class="input-group">
+                <label for="new-patient-condition">Condition:</label>
+                <select id="new-patient-condition" required>
+                    <option value="Stable">Stable</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Serious">Serious</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="new-patient-age">Age:</label>
+                <input type="number" id="new-patient-age" min="0" max="120" required placeholder="e.g., 45">
+            </div>
+            <button type="submit" class="submit-btn hospital-btn" id="submit-admission-btn">Admit Patient</button>
+        </form>
+    </section>
+
+    <script src="hospital.js"></script>
+</body>
+</html>

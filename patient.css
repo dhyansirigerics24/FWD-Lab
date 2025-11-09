@@ -1,0 +1,467 @@
+/* Basic Reset and Global Styles */
+:root {
+    --primary-blue: #007bff; /* A bright, standard blue */
+    --patient-teal: #1abc9c;
+    --secondary-blue: #e0f0ff; /* Light blue background for sections/highlights */
+    --card-bg: #ffffff;
+    --main-bg: #f4f7f9; /* Off-white/light gray background */
+    --text-dark: #333;
+    --text-light: #666;
+    --progress-fill: #4CAF50; /* Green for progress bars */
+    --progress-unfill: #e9ecef;
+    --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --border-radius-card: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    background-color: var(--main-bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+}
+
+/* * 1. HEADER STYLES */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px; /* Reduced padding for mobile */
+    background-color: var(--card-bg);
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 24px;
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-light);
+    margin-left: 20px;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-blue);
+}
+
+.user-profile i {
+    font-size: 24px;
+    color: var(--primary-blue);
+}
+
+/* * 2. DASHBOARD CONTAINER - Use Grid for Responsiveness */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column for mobile */
+    gap: 30px;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Media Query for Tablet/Desktop */
+@media (min-width: 768px) {
+    .dashboard-container {
+        grid-template-columns: 2fr 1fr; /* Two columns: 2/3 for main, 1/3 for side */
+    }
+    .header {
+        padding: 20px 50px;
+    }
+}
+
+
+/* * 3. CARD STYLING */
+.card {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: var(--border-radius-card);
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 20px; /* Separator for mobile */
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card h3 {
+    font-size: 1.2em;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--secondary-blue);
+    padding-bottom: 5px;
+}
+
+/* --- Progress Card Specific --- */
+.progress-card {
+    grid-column: 1 / -1; /* Take full width on mobile/tablet */
+}
+
+@media (min-width: 768px) {
+    .progress-card {
+        grid-column: 1 / 2; /* Main column on desktop */
+    }
+}
+
+.progress-content {
+    display: flex;
+    flex-direction: column; /* Stack on mobile */
+    align-items: center;
+    gap: 20px;
+}
+
+@media (min-width: 600px) {
+    .progress-content {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+}
+
+/* Progress Circle Styles */
+.progress-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(var(--progress-fill) 0%, var(--progress-unfill) 0%); /* Initial state: 0% filled */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.progress-circle::before {
+    content: '';
+    position: absolute;
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+}
+
+.activity-label {
+    position: relative;
+    z-index: 1;
+    color: var(--text-dark);
+}
+
+.progress-bars {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%; /* Ensure bars take full width of container on mobile */
+}
+
+@media (min-width: 600px) {
+    .progress-bars {
+        width: auto;
+    }
+}
+
+.goal-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.goal-text {
+    flex-shrink: 0;
+    width: 100px;
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+.progress-bar-container {
+    flex-grow: 1;
+    height: 10px;
+    background-color: var(--progress-unfill);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--progress-fill);
+    border-radius: 5px;
+    width: 0%;
+    transition: width 0.5s ease-out;
+}
+
+.goal-count {
+    font-weight: bold;
+    font-size: 0.9em;
+    width: 40px; /* Fixed width for alignment */
+    text-align: right;
+}
+
+.goal-tracker {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.goal-tracker label {
+    font-size: 0.9em;
+}
+
+.goal-tracker input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.update-goal-btn {
+    padding: 5px 10px;
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.update-goal-btn:hover {
+    background-color: #0056b3;
+}
+
+/* --- NEW: Health Metrics Grid Styling --- */
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive metric items */
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.metric-item {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fefefe;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.metric-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.metric-item i {
+    font-size: 28px;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+}
+
+.metric-item p {
+    font-size: 0.85em;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.metric-item h4 {
+    font-size: 1.5em;
+    margin: 5px 0 0 0;
+    color: var(--text-dark);
+}
+
+.metric-item small {
+    font-size: 0.6em;
+    color: var(--text-light);
+}
+
+/* --- BMI Card Specific --- */
+.bmi-card div {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: flex-end; /* Align inputs/labels nicely */
+}
+
+.bmi-card label {
+    font-weight: 500;
+    color: #555;
+    flex-basis: 100px; /* Fixed width for labels */
+}
+
+.bmi-card input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.calculate-btn {
+    padding: 10px 15px;
+    background-color: var(--patient-teal);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.calculate-btn:hover {
+    background-color: #16a085;
+}
+
+#bmi-result {
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+/* --- NEW: Connect Card Specific (Doctor Profile) --- */
+.doctor-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px; /* Added padding to highlight */
+    border: 1px solid var(--secondary-blue);
+    border-radius: 8px;
+    background-color: var(--secondary-blue); /* Highlight the container */
+}
+
+.doctor-profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-blue); /* Changed border to primary blue */
+}
+
+.doctor-info {
+    flex-grow: 1;
+}
+
+.doctor-info h4 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--primary-blue);
+}
+
+.doctor-info p {
+    margin: 0;
+    color: var(--text-dark);
+}
+
+.doctor-info small {
+    color: var(--text-light);
+    display: block;
+}
+
+.book-now-btn {
+    padding: 8px 15px;
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.book-now-btn:hover {
+    background-color: #0056b3;
+}
+
+/* --- Nearby Services Card --- */
+.service-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.service-item:last-child {
+    border-bottom: none;
+}
+
+.service-item i {
+    font-size: 24px; /* Slightly larger icon */
+    color: var(--patient-teal);
+    margin-right: 15px;
+}
+
+.service-item h4 {
+    font-size: 1em;
+    margin-bottom: 2px;
+}
+
+/* * 5. SOS BUTTON */
+.sos-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 70px; /* Slightly larger */
+    height: 70px;
+    border-radius: 50%;
+    background-color: #ff3333; /* Brighter Red */
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    border: 5px solid white; /* White ring for emphasis */
+    box-shadow: 0 6px 15px rgba(255, 51, 51, 0.6);
+    cursor: pointer;
+    z-index: 1000;
+    animation: pulse 1.5s infinite; /* Added a pulse effect */
+    transition: transform 0.2s;
+}
+
+.sos-button:hover {
+    transform: scale(1.05);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 51, 51, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 20px;
+    }
+    .nav-links {
+        display: none; /* Hide navigation links on small screens */
+    }
+    .dashboard-container {
+        padding: 15px;
+        gap: 15px;
+    }
+    .card {
+        padding: 20px;
+    }
+    .sos-button {
+        width: 55px;
+        height: 55px;
+        font-size: 16px;
+        bottom: 20px;
+        right: 20px;
+        border-width: 3px;
+    }
+}
