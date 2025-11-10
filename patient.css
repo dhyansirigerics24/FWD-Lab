@@ -106,6 +106,14 @@ body {
     margin-bottom: 15px;
     border-bottom: 2px solid var(--secondary-blue);
     padding-bottom: 5px;
+    display: flex; /* Added for icon alignment */
+    justify-content: space-between; /* Added for icon alignment */
+    align-items: center;
+}
+
+.card h3 i {
+    color: var(--patient-teal);
+    font-size: 0.9em;
 }
 
 /* --- Progress Card Specific --- */
@@ -123,121 +131,170 @@ body {
     display: flex;
     flex-direction: column; /* Stack on mobile */
     align-items: center;
-    gap: 20px;
+    gap: 30px; /* Increased gap */
 }
 
 @media (min-width: 600px) {
     .progress-content {
         flex-direction: row;
         justify-content: space-around;
+        align-items: flex-start; /* Align bars to the top */
     }
 }
 
-/* Progress Circle Styles */
+/* Progress Circle Styles (Enhanced) */
 .progress-circle {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 120px; /* Slightly larger circle */
+    height: 120px;
     border-radius: 50%;
-    background: conic-gradient(var(--progress-fill) 0%, var(--progress-unfill) 0%); /* Initial state: 0% filled */
+    /* Start with an example progress (75%) */
+    background: conic-gradient(
+        var(--patient-teal) 0%,
+        var(--patient-teal) 75%,
+        var(--progress-unfill) 75%,
+        var(--progress-unfill) 100%
+    ); 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-weight: bold;
     font-size: 1.1em;
+    box-shadow: 0 0 0 5px var(--secondary-blue); /* Subtle outer ring */
 }
 
 .progress-circle::before {
     content: '';
     position: absolute;
-    width: 85px;
-    height: 85px;
+    width: 100px; /* Smaller inner circle */
+    height: 100px;
     border-radius: 50%;
     background-color: var(--card-bg);
+    z-index: 1;
+}
+
+.progress-value {
+    position: relative;
+    z-index: 2;
+    color: var(--patient-teal);
+    font-size: 2em; /* Large percentage */
+    font-weight: 700;
 }
 
 .activity-label {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     color: var(--text-dark);
+    font-size: 0.8em;
+    margin-top: -5px; /* Pull closer to the value */
 }
 
 .progress-bars {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    width: 100%; /* Ensure bars take full width of container on mobile */
+    gap: 15px; /* Increased gap */
+    width: 100%; 
+    max-width: 350px; /* Limit max width on desktop */
 }
 
 @media (min-width: 600px) {
     .progress-bars {
-        width: auto;
+        width: 60%;
     }
 }
 
 .goal-item {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
 }
 
-.goal-text {
+.goal-item i {
+    font-size: 1.1em;
+    color: var(--primary-blue);
     flex-shrink: 0;
-    width: 100px;
+}
+
+.goal-info {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* forces the bar container to a new line */
+}
+
+.goal-text {
     font-size: 0.9em;
-    color: var(--text-light);
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.goal-count {
+    font-weight: 700;
+    font-size: 0.9em;
+    color: var(--patient-teal);
 }
 
 .progress-bar-container {
-    flex-grow: 1;
-    height: 10px;
+    width: 100%; /* Full width underneath the goal info */
+    height: 8px; /* Thinner bar */
     background-color: var(--progress-unfill);
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
+    margin-top: -5px; /* Pull up closer to text */
 }
 
 .progress-bar-fill {
     height: 100%;
     background-color: var(--progress-fill);
-    border-radius: 5px;
+    border-radius: 4px;
     width: 0%;
     transition: width 0.5s ease-out;
 }
 
-.goal-count {
-    font-weight: bold;
-    font-size: 0.9em;
-    width: 40px; /* Fixed width for alignment */
-    text-align: right;
-}
-
 .goal-tracker {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 15px;
+    margin-top: 25px; /* Increased separation */
+    padding-top: 15px;
+    border-top: 1px solid #eee;
     flex-wrap: wrap;
+    justify-content: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .goal-tracker label {
-    font-size: 0.9em;
+    font-size: 0.85em;
+    color: var(--text-light);
+    font-weight: 500;
 }
 
 .goal-tracker input[type="number"] {
-    width: 60px;
-    padding: 5px;
+    width: 80px;
+    padding: 8px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.9em;
 }
 
 .update-goal-btn {
-    padding: 5px 10px;
+    padding: 8px 15px;
     background-color: var(--primary-blue);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s;
+    align-self: flex-end; /* Align button to the bottom of the group */
 }
 
 .update-goal-btn:hover {
@@ -288,6 +345,50 @@ body {
 .metric-item small {
     font-size: 0.6em;
     color: var(--text-light);
+}
+/* --- Health Tip Card Specific (NEW) --- */
+.health-tip-card {
+    background-color: var(--secondary-blue); /* Light blue background */
+    border-left: 5px solid var(--primary-blue); /* Accent border */
+}
+
+.health-tip-card h3 {
+    display: flex; /* Allow h3 content to be laid out horizontally */
+    justify-content: space-between;
+    align-items: center;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    border-bottom: 2px solid #cce0f0; /* Lighter border */
+    padding-bottom: 5px;
+}
+
+/* Style for the Refresh Icon */
+#refresh-tip-btn {
+    cursor: pointer;
+    font-size: 0.8em; /* Smaller size for the icon */
+    color: var(--patient-teal);
+    transition: transform 0.3s;
+}
+
+#refresh-tip-btn:hover {
+    transform: rotate(90deg); /* Visual feedback on hover */
+    color: #0056b3;
+}
+
+.health-tip-card #health-tip-list {
+    list-style-type: none; /* Remove default bullets */
+    padding: 0;
+    margin: 0;
+}
+
+.health-tip-card #health-tip-list li {
+    font-size: 1em;
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 20px;
 }
 
 /* --- BMI Card Specific --- */
@@ -464,4 +565,19 @@ body {
         right: 20px;
         border-width: 3px;
     }
+
+    .goal-tracker {
+        justify-content: space-around;
+        gap: 10px;
+    }
+
+    .goal-tracker input[type="number"] {
+        width: 65px;
+    }
+
+    .update-goal-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
 }
+
