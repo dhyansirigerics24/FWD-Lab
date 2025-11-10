@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bmiCard.appendChild(resultDisplay);
     });
 
-    // --- 2. Daily Goals Logic (MODIFIED to use input fields) ---
+    // --- 2. Daily Goals Logic (NO CHANGE) ---
     const updateGoalsBtn = document.querySelector('.update-goal-btn');
 
     // Goal Configuration (Max values based on HTML text)
@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("SOS triggered! Sending signal to hospital dashboard.");
             
             // 1. Get the patient name from localStorage
-            // Using a static name for this file since actual patient login isn't implemented here
             const patientName = localStorage.getItem('current_patient_name') || 'Patient Karan S.'; 
             
             // 2. Use the patient name in the alert message
@@ -126,7 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 4. Book Now/Doctor Connect Logic (NEW) ---
+    // --- NEW HELPERS FOR MULTIPLE REQUESTS ---
+    function getDoctorRequests() {
+        const requestsJSON = localStorage.getItem('doctor_request_queue');
+        return requestsJSON ? JSON.parse(requestsJSON) : [];
+    }
+
+    // --- 4. Book Now/Doctor Connect Logic (MODIFIED for queue system) ---
     const bookNowBtn = document.querySelector('.book-now-btn');
     bookNowBtn.addEventListener('click', () => {
         // 1. Get patient name
@@ -139,20 +144,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const criticality = prompt("How critical is your request? (e.g., Low, Medium, High, Urgent)");
+        const criticality = prompt("How critical is your request? (e.g., Low, Medium, High)");
         if (!criticality) {
             alert("Request cancelled.");
             return;
         }
+        
+        // --- LOGIC FOR QUEUE STORAGE ---
+        const queueKey = 'doctor_request_queue';
 
-        // 3. Format the alert message
-        const doctorAlert = `DOCTOR REQUEST: Patient ${patientName} needs attention. Reason: ${reason}. Criticality: **${criticality.toUpperCase()}**.`;
+        // Get existing queue or start a new one
+        const doctorRequestQueue = getDoctorRequests();
 
-        // 4. Store the request in localStorage for the hospital dashboard
-        localStorage.setItem('critical_doctor_request_alert', doctorAlert);
+        // Create the new request object
+        const newRequest = {
+            id: Date.now(), // Use timestamp as a unique ID for removal
+            name: patientName,
+            reason: reason,
+            criticality: criticality.toUpperCase(), // Keep criticality for sorting/reference
+            timestamp: new Date().toISOString()
+        };
 
-        alert(`Doctor request sent for ${patientName} (Criticality: ${criticality}). A staff member will connect with you shortly. (Simulated)`);
-        console.log("Doctor Request Sent:", doctorAlert);
+        // Add the new request to the queue
+        doctorRequestQueue.push(newRequest);
+
+        // Store the updated queue
+        localStorage.setItem(queueKey, JSON.stringify(doctorRequestQueue));
+        
+        // Optionally remove the old single alert key for cleanup
+        localStorage.removeItem('critical_doctor_request_alert');
+
+        const queueNumber = doctorRequestQueue.length;
+        alert(`Doctor request sent for ${patientName} (Criticality: ${criticality}). A staff member will connect with you shortly. `);
+        console.log("Doctor Request Sent:", newRequest);
     });
 
+    // Set a default patient name for simulation purposes
+    if (!localStorage.getItem('current_patient_name')) {
+        localStorage.setItem('current_patient_name', 'Karan S.');
+    }
 });
