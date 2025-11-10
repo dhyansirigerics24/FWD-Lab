@@ -27,40 +27,59 @@
     <main class="dashboard-container">
         <section class="left-column">
             <div class="card progress-card">
-                <h3>Progress At A Glance</h3>
+                <h3>Progress At A Glance <i class="fas fa-chart-line"></i></h3>
                 <div class="progress-content">
                     <div class="progress-circle">
-                        <span class="activity-label">Activity</span>
+                        <span class="progress-value" id="overall-progress-value">75%</span>
+                        <span class="activity-label">Progress</span>
                     </div>
                     <div class="progress-bars">
                         <div class="goal-item">
-                            <span class="goal-text">Steps (10k)</span>
-                            <div class="progress-bar-container"><div class="progress-bar-fill" id="steps-progress" style="width: 0%;"></div></div>
-                            <span class="goal-count" id="steps-count">0</span>
+                            <i class="fas fa-walking"></i>
+                            <div class="goal-info">
+                                <span class="goal-text">Steps (10,000)</span>
+                                <span class="goal-count" id="steps-count">7,500</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="steps-progress" style="width: 75%;"></div>
+                            </div>
                         </div>
                         <div class="goal-item">
-                            <span class="goal-text">Water (8L)</span>
-                            <div class="progress-bar-container"><div class="progress-bar-fill" id="water-progress" style="width: 0%;"></div></div>
-                            <span class="goal-count" id="water-count">0</span>
+                            <i class="fas fa-tint"></i>
+                            <div class="goal-info">
+                                <span class="goal-text">Water (8 Liters)</span>
+                                <span class="goal-count" id="water-count">6 L</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="water-progress" style="width: 75%; background-color: #3498db;"></div>
+                            </div>
                         </div>
                         <div class="goal-item">
-                            <span class="goal-text">Sleep (8h)</span>
-                            <div class="progress-bar-container"><div class="progress-bar-fill" id="sleep-progress" style="width: 0%;"></div></div>
-                            <span class="goal-count" id="sleep-count">0</span>
+                            <i class="fas fa-bed"></i>
+                            <div class="goal-info">
+                                <span class="goal-text">Sleep (8 hours)</span>
+                                <span class="goal-count" id="sleep-count">7 h</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="sleep-progress" style="width: 87.5%; background-color: #9b59b6;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="goal-tracker">
-                    <label for="steps">Steps:</label>
-                    <input type="number" id="steps" value="0" min="0" max="10000">
-
-                    <label for="water">Water:</label>
-                    <input type="number" id="water" value="0" min="0" max="8">
-
-                    <label for="sleep">Sleep:</label>
-                    <input type="number" id="sleep" value="0" min="0" max="8">
-
+                    <div class="input-group">
+                        <label for="steps">Steps:</label>
+                        <input type="number" id="steps" value="7500" min="0" max="10000">
+                    </div>
+                    <div class="input-group">
+                        <label for="water">Water (L):</label>
+                        <input type="number" id="water" value="6" min="0" max="8">
+                    </div>
+                    <div class="input-group">
+                        <label for="sleep">Sleep (h):</label>
+                        <input type="number" id="sleep" value="7" min="0" max="8">
+                    </div>
                     <button class="update-goal-btn">Update Goals</button>
                 </div>
             </div>
@@ -91,6 +110,13 @@
                 </div>
             </div>
 
+            <div class="card health-tip-card">
+                <h3>Daily Health Tips (3) <i class="fas fa-redo-alt" id="refresh-tip-btn"></i></h3>
+                <ul id="health-tip-list">
+                    <li>Loading tips...</li>
+                </ul>
+            </div>
+
         </section>
 
         <section class="right-column">
@@ -105,6 +131,7 @@
                     <input type="text" id="height" placeholder="Enter height">
                 </div>
                 <button class="calculate-btn">Calculate BMI</button>
+                <div id="bmi-result"></div>
             </div>
             
             <div class="card connect-card">
