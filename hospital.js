@@ -168,15 +168,34 @@ function renderDashboardSummary() {
     }
 }
 
-// --- NEW HELPER FUNCTION: Clear a specific alert from localStorage ---
-function clearAlert(key) {
-    localStorage.removeItem(key);
-    // Re-render the alerts after clearing
-    checkAndDisplaySOS(); 
+// --- MODIFIED HELPER FUNCTION: Clear a specific alert from localStorage ---
+function clearAlert(key, id = null) { // Add optional 'id' parameter for queue items
+    if (key === 'critical_sos_alert') {
+        localStorage.removeItem(key);
+        // Re-render SOS alerts
+        checkAndDisplaySOS(); 
+    } else if (key === 'doctor_request_queue' && id !== null) {
+        // Logic to remove a specific request from the queue
+        const queueJSON = localStorage.getItem('doctor_request_queue');
+        let queue = queueJSON ? JSON.parse(queueJSON) : [];
+        
+        // Filter out the request with the matching ID (which is the timestamp from patient.js)
+        queue = queue.filter(req => req.id !== id);
+        
+        localStorage.setItem('doctor_request_queue', JSON.stringify(queue));
+        // Re-render the queue immediately
+        renderWaitingQueue(); 
+    } else {
+        // Fallback for any other keys
+        localStorage.removeItem(key);
+    }
 }
+// Expose the clearAlert function globally for buttons
+window.clearAlert = clearAlert;
+
 
 // -------------------------------------------------------------------
-// --- EXISTING CODE (for Staffing, SOS, and initial setup) ---
+// --- EXISTING CODE (for Staffing and Oxygen) ---
 // -------------------------------------------------------------------
 
 function requestCylinders() {
@@ -211,71 +230,114 @@ function requestCylinders() {
             return savedCount ? parseInt(savedCount) : DEFAULT_STAFF_COUNTS[type];
         }
 
-        // --- SOS Alert Persistence (MODIFIED TO HANDLE DOCTOR REQUESTS) ---
+        // --- SOS Alert Persistence (MODIFIED: ONLY handles SOS) ---
         function checkAndDisplaySOS() {
             const sosAlert = localStorage.getItem('critical_sos_alert');
-            // NEW: Check for Doctor Request alert
-            const doctorRequestAlert = localStorage.getItem('critical_doctor_request_alert');
 
             const alertsCard = document.getElementById('critical-alerts-card');
             const defaultAlert = document.getElementById('default-alert');
 
-            // Clear previous alerts
-            alertsCard.querySelectorAll('.live-alert-item').forEach(el => el.remove());
+            // Clear previous SOS alerts
+            alertsCard.querySelectorAll('#sos-live-alert').forEach(el => el.remove()); 
 
-            if (sosAlert || doctorRequestAlert) {
+            if (sosAlert) {
                 
                 alertsCard.classList.add('critical-active'); 
                 defaultAlert.style.display = 'none';
 
-                // 1. Display Doctor Request Alert (if present)
-                if (doctorRequestAlert) {
-                    const newAlert = document.createElement('div');
-                    newAlert.className = 'alert-content live-alert-item';
-                    newAlert.id = 'doctor-live-alert';
-                    
-                    // Extract Criticality for icon/color cue if needed, but display full message
-                    const match = doctorRequestAlert.match(/Criticality: \*\*(.+?)\*\*/);
-                    const criticality = match ? match[1] : 'REQUEST';
+                const match = sosAlert.match(/SOS from Patient (.+) triggered at (.+)/);
+                let name = 'Unknown Patient';
+                let time = '';
 
-                    newAlert.innerHTML = `
-                        <i class="fas fa-user-md" style="color: #007bff; font-size: 24px;"></i>
-                        <p><strong>🚨 ${criticality}: Doctor Request!</strong> ${doctorRequestAlert.substring(doctorRequestAlert.indexOf('Patient'))}</p>
-                        <button onclick="clearAlert('critical_doctor_request_alert')" style="background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Resolve</button>
-                    `;
-                    alertsCard.appendChild(newAlert);
+                if (match && match.length === 3) {
+                    name = match[1].trim();
+                    time = match[2].trim();
                 }
 
-                // 2. Display SOS Alert (if present)
-                if (sosAlert) {
-                    const match = sosAlert.match(/SOS from Patient (.+) triggered at (.+)/);
-                    let name = 'Unknown Patient';
-                    let time = '';
-
-                    if (match && match.length === 3) {
-                        name = match[1].trim();
-                        time = match[2].trim();
-                    }
-
-                    const newAlert = document.createElement('div');
-                    newAlert.className = 'alert-content live-alert-item';
-                    newAlert.id = 'sos-live-alert';
-                    newAlert.innerHTML = `
-                        <i class="fas fa-heart-crack" style="color: #e74c3c; font-size: 24px;"></i>
-                        <p><strong>🚨 EMERGENCY: SOS from Patient ${name}!</strong> ${time ? `(${time})` : ''}</p>
-                        <button onclick="clearAlert('critical_sos_alert')" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Resolve</button>
-                    `;
-                    alertsCard.appendChild(newAlert);
-                }
+                const newAlert = document.createElement('div');
+                newAlert.className = 'alert-content live-alert-item';
+                newAlert.id = 'sos-live-alert';
+                newAlert.innerHTML = `
+                    <i class="fas fa-heart-crack" style="color: #e74c3c; font-size: 24px;"></i>
+                    <p><strong>🚨 EMERGENCY: SOS from Patient ${name}!</strong> ${time ? `(${time})` : ''}</p>
+                    <button onclick="clearAlert('critical_sos_alert')" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Resolve</button>
+                `;
+                alertsCard.appendChild(newAlert);
                 
-            } else {
+            } else if (!alertsCard.querySelector('.live-alert-item')) {
                 // No active alerts
                 defaultAlert.style.display = 'flex';
                 alertsCard.classList.remove('critical-active'); 
             }
         }
         
-        // --- STAFFING LOGIC ---
+        // --- NEW HELPERS FOR MULTIPLE REQUESTS IN QUEUE ---
+        function getDoctorRequests() {
+            const requestsJSON = localStorage.getItem('doctor_request_queue');
+            localStorage.removeItem('critical_doctor_request_alert'); // Cleanup old single alert key
+            return requestsJSON ? JSON.parse(requestsJSON) : [];
+        }
+
+        // --- NEW FUNCTION: Render Waiting Queue (Only live requests with sequential numbering) ---
+        function renderWaitingQueue() {
+            const queueList = document.getElementById('waiting-queue-list');
+            if (!queueList) return; 
+            
+            queueList.innerHTML = ''; // Clear existing queue items (including old static ones)
+
+            // Retrieve all live doctor requests as an array
+            const liveDoctorRequests = getDoctorRequests(); 
+            
+            // Sort requests by criticality (optional, but good practice: Urgent/High first)
+            const PRIORITY_ORDER = ['HIGH', 'MEDIUM', 'LOW'];
+            
+            liveDoctorRequests.sort((a, b) => {
+                const priorityA = PRIORITY_ORDER.indexOf(a.criticality.toUpperCase());
+                const priorityB = PRIORITY_ORDER.indexOf(b.criticality.toUpperCase());
+                // Sort by priority (lower index = higher priority) then by ID/time (for tie-breaking)
+                if (priorityA === priorityB) {
+                    return a.id - b.id; // Sort by creation time (ID is timestamp)
+                }
+                return priorityA - priorityB;
+            });
+
+            // Render the sorted queue
+            liveDoctorRequests.forEach((request, index) => {
+                const queueNumber = `#${index + 1}`; // Sequential numbering
+
+                // Set color class based on criticality for styling
+                const priority = request.criticality.toLowerCase();
+                let priorityClass = 'low-priority';
+                if (priority === 'high' || priority === 'urgent') {
+                    priorityClass = 'high-priority';
+                } else if (priority === 'medium') {
+                    priorityClass = 'medium-priority';
+                }
+                
+                const listItem = document.createElement('li');
+                listItem.className = `queue-item ${priorityClass}`;
+                
+                // Note: The resolve button uses the global clearAlert function
+                const buttonHTML = `<button onclick="clearAlert('doctor_request_queue', ${request.id})" style="background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: auto; white-space: nowrap;">Resolve</button>`;
+
+                listItem.innerHTML = `
+                    <span class="queue-number">${queueNumber}</span>
+                    <div class="queue-info">
+                        <h4>${request.name} <small>(${request.criticality})</small></h4>
+                        <small>${request.reason} (Time: ${new Date(request.id).toLocaleTimeString()})</small>
+                    </div>
+                    ${buttonHTML}
+                `;
+                queueList.appendChild(listItem);
+            });
+            
+            // If the queue is empty, show a message
+            if (liveDoctorRequests.length === 0) {
+                 queueList.innerHTML = `<li class="queue-item" style="justify-content: center; color: #777;">Queue is clear.</li>`;
+            }
+        }
+        
+        // --- STAFFING LOGIC (NO CHANGE) ---
         
         const STAFF_SPECIALIZATIONS = {
             doctors: [
@@ -366,10 +428,16 @@ function requestCylinders() {
             
             // Initial Dashboard Summary Render
             renderDashboardSummary();
+            
+            // Initial Queue Render 
+            renderWaitingQueue();
 
-            // Run SOS Check (now checks for Doctor Requests too)
+            // Run SOS Check 
             checkAndDisplaySOS();
+            
+            // Periodically check for new SOS/Doctor Requests and update views
             setInterval(checkAndDisplaySOS, 2000); 
+            setInterval(renderWaitingQueue, 2000);
             
             // 1. Quick Actions Button Handlers
             
