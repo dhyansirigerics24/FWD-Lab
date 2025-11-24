@@ -43,7 +43,7 @@ body {
 /* FORM/CHOICE CONTAINER STYLING */
 .form-container, #choice-container {
     background: white;
-    padding: 30px;
+    padding: 39px;
     border-radius: 12px; /* Increased radius */
     box-shadow: 0 8px 30px var(--shadow-light); /* Softer, larger shadow */
     transition: all 0.4s ease-in-out;
@@ -196,3 +196,4 @@ body {
         font-size: 1em;
     }
 }
+
